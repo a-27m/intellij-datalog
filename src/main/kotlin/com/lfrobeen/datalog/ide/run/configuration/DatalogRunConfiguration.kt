@@ -54,7 +54,7 @@ class DatalogRunConfiguration(project: Project, configurationFactory: Configurat
     }
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> =
-        DatalogSettingsEditor()
+        DatalogSettingsEditor(project)
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? {
         if (interpreterPath == null) {

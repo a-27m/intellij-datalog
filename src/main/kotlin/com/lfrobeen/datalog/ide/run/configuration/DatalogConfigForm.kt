@@ -3,13 +3,14 @@ package com.lfrobeen.datalog.ide.run.configuration
 import com.intellij.execution.ui.CommonProgramParametersPanel
 import com.intellij.execution.ui.MacroComboBoxWithBrowseButton
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.LabeledComponent.create
 import com.intellij.ui.RawCommandLineEditor
 import java.awt.BorderLayout
 
 
-class DatalogConfigForm : CommonProgramParametersPanel() {
+class DatalogConfigForm(project: Project) : CommonProgramParametersPanel(project) {
     private var interpreterOptionsComponent: LabeledComponent<RawCommandLineEditor>? = null
     private var interpreterPathComponent: LabeledComponent<MacroComboBoxWithBrowseButton>? = null
     private var filePathComponent: LabeledComponent<MacroComboBoxWithBrowseButton>? = null
