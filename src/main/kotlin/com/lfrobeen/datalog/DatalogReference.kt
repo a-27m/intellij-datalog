@@ -14,12 +14,9 @@ class DatalogReference(element: DatalogReferenceMixin, textRange: TextRange? = n
         private val RESOLVER = ResolveCache.AbstractResolver { ref: DatalogReference, _: Boolean -> ref.resolveImpl() }
     }
 
-    override fun canResolveTo(elementClass: Class<out PsiElement>?): Boolean {
-        return when (elementClass) {
-            is DatalogDeclarationMixin -> true
-            is DatalogVarDeclarationMixin -> true
-            else -> false
-        }
+    override fun canResolveTo(elementClass: Class<out PsiElement>): Boolean {
+        return elementClass.isAssignableFrom(DatalogDeclarationMixin::class.java) ||
+            elementClass.isAssignableFrom(DatalogVarDeclarationMixin::class.java)
     }
 
     override fun resolve(): PsiElement? {
