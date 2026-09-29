@@ -69,28 +69,34 @@ class SouffleCompatibilityTest : BasePlatformTestCase() {
 
     fun testValidFixturesAreAcceptedByBoth() {
         if (!soufflePresentOrSkip()) return
-        for (file in fixtures("valid")) {
-            assertTrue("Soufflé should accept valid/${file.name}", souffleAccepts(file))
-            assertEmpty("Plugin should parse valid/${file.name} cleanly", pluginSyntaxErrors(file))
+        val problems = fixtures("valid").flatMap { file ->
+            buildList {
+                if (!souffleAccepts(file)) add("Soufflé rejects valid/${file.name}")
+                pluginSyntaxErrors(file).forEach { add("Plugin error in valid/${file.name}: $it") }
+            }
         }
+        assertEmpty(problems)
     }
 
     fun testInvalidFixturesAreRejectedByBoth() {
         if (!soufflePresentOrSkip()) return
-        for (file in fixtures("invalid")) {
-            assertFalse("Soufflé should reject invalid/${file.name}", souffleAccepts(file))
-            assertFalse("Plugin should reject invalid/${file.name}", pluginSyntaxErrors(file).isEmpty())
+        val problems = fixtures("invalid").flatMap { file ->
+            buildList {
+                if (souffleAccepts(file)) add("Soufflé accepts invalid/${file.name}")
+                if (pluginSyntaxErrors(file).isEmpty()) add("Plugin accepts invalid/${file.name}")
+            }
         }
+        assertEmpty(problems)
     }
 
     fun testKnownGapsAreAcceptedBySouffleButNotByPlugin() {
         if (!soufflePresentOrSkip()) return
-        for (file in fixtures("known-gaps")) {
-            assertTrue("Soufflé should accept known-gaps/${file.name}", souffleAccepts(file))
-            assertFalse(
-                "Plugin now parses known-gaps/${file.name} cleanly: move it to valid/",
-                pluginSyntaxErrors(file).isEmpty()
-            )
+        val problems = fixtures("known-gaps").flatMap { file ->
+            buildList {
+                if (!souffleAccepts(file)) add("Soufflé rejects known-gaps/${file.name}")
+                if (pluginSyntaxErrors(file).isEmpty()) add("Plugin now parses known-gaps/${file.name}: move it to valid/")
+            }
         }
+        assertEmpty(problems)
     }
 }

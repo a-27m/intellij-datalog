@@ -21,7 +21,8 @@
     }
 }
 
-.init g = Derived<number>
+.type Id = number
+.init g = Derived<Id>
 .init p = Plain
 
 g.link(1, 2).

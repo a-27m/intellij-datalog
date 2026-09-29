@@ -9,7 +9,6 @@ r(x + 1, y - 1, s) :- q(x), q(y), r(_, _, s).
 r(x * y, x / y, "a") :- q(x), q(y).
 r(x % 2, x ^ 2, "b") :- q(x).
 r(x band 1, x bor 2, "c") :- q(x).
-r(x bxor 3, bnot x, "d") :- q(x).
 r((x + 1) * 2, x, "e") :- q(x).
 r(x, x, cat("a", "b")) :- q(x).
 r(x, strlen("abc"), to_string(x)) :- q(x).

@@ -1,10 +1,18 @@
 package com.lfrobeen.datalog.lexer
 
 import com.intellij.psi.TokenType
+import com.intellij.psi.tree.IElementType
 import com.lfrobeen.datalog.lang.lexer.DatalogLexer
+import com.lfrobeen.datalog.lang.psi.DatalogTypes
 import junit.framework.TestCase
 
 class DatalogLexerTest : TestCase() {
+
+    /** Token types by the name of their constant in [DatalogTypes] (their debug names are the raw token text). */
+    private val tokenNames: Map<IElementType, String> =
+        DatalogTypes::class.java.fields
+            .filter { IElementType::class.java.isAssignableFrom(it.type) }
+            .associate { (it.get(null) as IElementType) to it.name }
 
     /** Lexes [text] and returns `TOKEN(text)` for each non-whitespace token. */
     private fun lex(text: String): List<String> {
@@ -14,7 +22,7 @@ class DatalogLexerTest : TestCase() {
         while (true) {
             val type = lexer.tokenType ?: break
             if (type != TokenType.WHITE_SPACE) {
-                val name = type.toString().removePrefix("DatalogTokenType. ")
+                val name = tokenNames[type] ?: type.toString()
                 tokens += "$name(${lexer.tokenText})"
             }
             lexer.advance()

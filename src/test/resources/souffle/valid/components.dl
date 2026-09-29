@@ -8,7 +8,8 @@
     reach(x, y) :- link(x, y).
     reach(x, z) :- reach(x, y), link(y, z).
 }
-.init g = Derived<number>
+.type Id = number
+.init g = Derived<Id>
 g.link(1, 2).
 .decl out(x: number, y: number)
 out(x, y) :- g.reach(x, y).

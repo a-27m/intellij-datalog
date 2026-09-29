@@ -1,0 +1,4 @@
+.comp C<T> {
+    .decl a(x: T)
+}
+.init c = C<number>

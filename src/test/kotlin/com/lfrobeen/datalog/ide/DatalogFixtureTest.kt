@@ -18,7 +18,7 @@ class DatalogFixtureTest : BasePlatformTestCase() {
             "test.dl",
             """
             .decl edge(x: number, y: number)
-            edge<caret>(1, 2).
+            ed<caret>ge(1, 2).
             """.trimIndent()
         )
 
@@ -34,7 +34,7 @@ class DatalogFixtureTest : BasePlatformTestCase() {
             """
             .decl edge(x: number, y: number)
             .decl reach(x: number, y: number)
-            reach(x, y) :- edge<caret>(x, y).
+            reach(x, y) :- ed<caret>ge(x, y).
             """.trimIndent()
         )
 
