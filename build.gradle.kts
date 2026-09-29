@@ -44,13 +44,17 @@ idea {
 
 intellijPlatform {
     pluginConfiguration {
-        name = "intellij-datalog"
         ideaVersion {
             sinceBuild = "262"
             untilBuild = provider { null }
         }
     }
     instrumentCode = false
+    pluginVerification {
+        ides {
+            create(IntelliJPlatformType.IntellijIdea, ideaVersion)
+        }
+    }
 }
 
 java {
@@ -112,6 +116,13 @@ tasks.compileKotlin {
 
 tasks.compileJava {
     dependsOn(generateDatalogLexer, generateDatalogParser)
+}
+
+// Expose the plugin version at runtime without touching internal PluginManager APIs.
+tasks.processResources {
+    filesMatching("datalog/version.properties") {
+        expand("version" to project.version.toString())
+    }
 }
 
 tasks.withType<Copy> {

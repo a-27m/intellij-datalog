@@ -1,10 +1,9 @@
 package com.lfrobeen.datalog.ide.component
 
-import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.extensions.PluginId
 import com.lfrobeen.datalog.ide.settings.DatalogPluginSettings
+import java.util.Properties
 
 @Service(Service.Level.APP)
 class DatalogComponent {
@@ -12,11 +11,10 @@ class DatalogComponent {
     val updated: Boolean
 
     init {
-        val plugin = PluginManagerCore.getPlugin(PluginId.getId("com.lfrobeen.intellij-datalog"))
         val pluginSettings = DatalogPluginSettings.getInstance()
 
         val previousVersion = pluginSettings.version
-        val currentVersion = plugin?.version
+        val currentVersion = readPluginVersion()
 
         updated = previousVersion != currentVersion
 
@@ -24,6 +22,12 @@ class DatalogComponent {
             pluginSettings.version = currentVersion
         }
     }
+
+    // The version is written into a resource at build time (see processResources in build.gradle.kts).
+    private fun readPluginVersion(): String? =
+        javaClass.classLoader.getResourceAsStream("datalog/version.properties")?.use { stream ->
+            Properties().apply { load(stream) }.getProperty("version")
+        }
 
     companion object {
         fun getInstance(): DatalogComponent = service()
