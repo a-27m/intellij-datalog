@@ -1,6 +1,6 @@
 {
   parserClass="com.lfrobeen.datalog.lang.parser.DatalogParser"
-  parserUtilClass="com.lfrobeen.datalog.lang.parser.DatalogParserUtil"
+  parserUtilClass="com.intellij.lang.parser.GeneratedParserUtilBase"
 
   extends="com.lfrobeen.datalog.lang.psi.DatalogCompositePsiElement"
 
