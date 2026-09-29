@@ -95,3 +95,9 @@ The plugin supports all JetBrains IDEs (i.e. IntelliJ, PyCharm, WebStorm, etc.) 
 Just search for `Datalog Language Support` in the marketplace section of the plugin dialog.
 
 The plugin is listed on the [JetBrains plugin repo](https://plugins.jetbrains.com/plugin/13056-datalog-language-support).
+## Releases
+
+Every push and pull request is built by GitHub Actions (`.github/workflows/ci.yml`).
+Pushing a tag such as `v2.0.0` publishes a GitHub release with the plugin zip attached.
+To install it, download the zip from the [Releases](../../releases) page and use
+**Settings → Plugins → ⚙ → Install Plugin from Disk…**.
