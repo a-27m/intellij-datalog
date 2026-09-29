@@ -9,12 +9,12 @@ version = "2.0.0"
 
 plugins {
     idea
-    kotlin("jvm") version "1.6.20"
-    id("org.jetbrains.intellij") version "1.5.2"
-    id("org.jetbrains.grammarkit") version "2021.2.2"
-    id("de.undercouch.download") version "3.4.3"
-    id("net.saliman.properties") version "1.4.6"
-    id("com.palantir.git-version") version "0.11.0"
+    kotlin("jvm") version "2.4.20"
+    id("org.jetbrains.intellij") version "1.17.4"
+    id("org.jetbrains.grammarkit") version "2023.3.0.4"
+    id("de.undercouch.download") version "5.7.0"
+    id("net.saliman.properties") version "1.6.0"
+    id("com.palantir.git-version") version "5.1.0"
 }
 
 
