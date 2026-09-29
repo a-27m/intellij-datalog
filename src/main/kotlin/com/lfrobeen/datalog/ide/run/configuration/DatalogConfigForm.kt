@@ -3,13 +3,14 @@ package com.lfrobeen.datalog.ide.run.configuration
 import com.intellij.execution.ui.CommonProgramParametersPanel
 import com.intellij.execution.ui.MacroComboBoxWithBrowseButton
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.LabeledComponent.create
 import com.intellij.ui.RawCommandLineEditor
 import java.awt.BorderLayout
 
 
-class DatalogConfigForm : CommonProgramParametersPanel() {
+class DatalogConfigForm(project: Project) : CommonProgramParametersPanel(project) {
     private var interpreterOptionsComponent: LabeledComponent<RawCommandLineEditor>? = null
     private var interpreterPathComponent: LabeledComponent<MacroComboBoxWithBrowseButton>? = null
     private var filePathComponent: LabeledComponent<MacroComboBoxWithBrowseButton>? = null
@@ -19,8 +20,8 @@ class DatalogConfigForm : CommonProgramParametersPanel() {
         interpreterOptionsComponent = create(RawCommandLineEditor(), "Interpreter options")
         interpreterOptionsComponent!!.labelLocation = BorderLayout.WEST
 
-        val chooseInterpreterDesc = FileChooserDescriptorFactory.createSingleLocalFileDescriptor()
-        chooseInterpreterDesc.title = "Choose interpreter..."
+        val chooseInterpreterDesc = FileChooserDescriptorFactory.singleFile()
+            .withTitle("Choose interpreter...")
 
         interpreterPathComponent = create(
             MacroComboBoxWithBrowseButton(chooseInterpreterDesc, project),
@@ -28,8 +29,8 @@ class DatalogConfigForm : CommonProgramParametersPanel() {
         )
         interpreterPathComponent!!.labelLocation = BorderLayout.WEST
 
-        val chooseScriptDesc = FileChooserDescriptorFactory.createSingleLocalFileDescriptor()
-        chooseScriptDesc.title = "Choose datalog program..."
+        val chooseScriptDesc = FileChooserDescriptorFactory.singleFile()
+            .withTitle("Choose datalog program...")
 
         filePathComponent = create(MacroComboBoxWithBrowseButton(chooseScriptDesc, project), "Program:")
         filePathComponent!!.labelLocation = BorderLayout.WEST

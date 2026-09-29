@@ -13,7 +13,7 @@ class DatalogElementType(debugName: String) : IElementType(debugName, DatalogLan
 
         @JvmField
         val EXT_COMMENT = object : IReparseableElementType("EXT_COMMENT", DatalogLanguage) {
-            override fun isParsable(buffer: CharSequence, fileLanguage: Language, project: Project): Boolean {
+            override fun isParsable(parent: ASTNode?, buffer: CharSequence, fileLanguage: Language, project: Project): Boolean {
                 return false
             }
         }
@@ -21,7 +21,7 @@ class DatalogElementType(debugName: String) : IElementType(debugName, DatalogLan
 
         @JvmField
         val DOC_COMMENT = object : IReparseableElementType("DOC_COMMENT", DatalogLanguage) {
-            override fun isParsable(buffer: CharSequence, fileLanguage: Language, project: Project): Boolean {
+            override fun isParsable(parent: ASTNode?, buffer: CharSequence, fileLanguage: Language, project: Project): Boolean {
                 return false
             }
         }

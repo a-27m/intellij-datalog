@@ -32,7 +32,7 @@ class DatalogDocumentationProvider : AbstractDocumentationProvider() {
             val declaration = element.text
 
             return DEFINITION_START + declaration + DEFINITION_END +
-                    CONTENT_START + StringUtil.escapeXml(getDocString(element)).replace("\n", "<br>") +
+                    CONTENT_START + StringUtil.escapeXmlEntities(getDocString(element).orEmpty()).replace("\n", "<br>") +
                     CONTENT_END
         }
 

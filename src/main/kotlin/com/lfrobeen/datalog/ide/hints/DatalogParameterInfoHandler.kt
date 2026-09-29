@@ -1,6 +1,5 @@
 package com.lfrobeen.datalog.ide.hints
 
-import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.lang.parameterInfo.*
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.parentOfType
@@ -49,8 +48,6 @@ class DatalogParameterInfoHandler : ParameterInfoHandler<DatalogArgumentList, Da
         )
     }
 
-    override fun getParametersForLookup(item: LookupElement?, context: ParameterInfoContext?): Array<Any>? = null
-
     override fun findElementForUpdatingParameterInfo(context: UpdateParameterInfoContext): DatalogArgumentList? {
         val atom = getAtom(context.file.findElementAt(context.offset))
         val argumentList = atom?.argumentList
@@ -80,7 +77,5 @@ class DatalogParameterInfoHandler : ParameterInfoHandler<DatalogArgumentList, Da
 
     private fun getAtom(psiElement: PsiElement?): DatalogAtom? =
         psiElement as? DatalogAtom ?: psiElement?.parentOfType()
-
-    override fun couldShowInLookup(): Boolean = true
 
 }

@@ -1,67 +1,45 @@
 package com.lfrobeen.datalog.ide.activity
 
-import com.intellij.notification.*
-import com.intellij.notification.impl.NotificationsManagerImpl
+import com.intellij.ide.BrowserUtil
+import com.intellij.notification.NotificationAction
+import com.intellij.notification.NotificationGroupManager
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.StartupActivity
-import com.intellij.openapi.ui.popup.Balloon
-import com.intellij.openapi.util.io.StreamUtil
-import com.intellij.openapi.wm.WindowManager
-import com.intellij.openapi.wm.impl.IdeFrameImpl
-import com.intellij.ui.BalloonLayoutData
-import com.intellij.ui.BalloonLayoutImpl
-import com.intellij.ui.awt.RelativePoint
+import com.intellij.openapi.startup.ProjectActivity
 import com.lfrobeen.datalog.ide.component.DatalogComponent
 import com.lfrobeen.datalog.ide.icons.DatalogIcons
 
 
-class DatalogPluginUpdateActivity : StartupActivity {
-    private val notificationDisplayId = "Datalog Plugin"
+class DatalogPluginUpdateActivity : ProjectActivity {
+    private val notificationGroupId = "Datalog Plugin"
 
     private val notificationHeading = "Greetings from Datalog Plugin!"
     private val notificationContent by lazy {
-        val stream = javaClass.classLoader.getResourceAsStream("datalog/ide/notifications/update.html")
-        StreamUtil.convertSeparators(StreamUtil.readText(stream, "UTF-8"))
+        val stream = requireNotNull(javaClass.classLoader.getResourceAsStream("datalog/ide/notifications/update.html"))
+        stream.bufferedReader(Charsets.UTF_8).use { it.readText() }.replace("\r\n", "\n")
     }
 
-    private val notificationGroup = NotificationGroup(
-        notificationDisplayId,
-        NotificationDisplayType.STICKY_BALLOON,
-        false, null,
-        DatalogIcons.MAIN
+    private val links = listOf(
+        "Star on GitHub" to "https://github.com/lfrobeen/intellij-datalog",
+        "Rate the plugin" to "https://plugins.jetbrains.com/plugin/13056-datalog-language-support/",
+        "Changelog" to "https://github.com/lfrobeen/intellij-datalog/blob/master/CHANGELOG.md",
+        "Report an issue" to "https://github.com/lfrobeen/intellij-datalog/issues",
     )
 
-    override fun runActivity(project: Project) {
+    override suspend fun execute(project: Project) {
         if (!DatalogComponent.getInstance().updated) {
             return
         }
 
-        val frame = WindowManager.getInstance().getIdeFrame(project)
-
-        val notification = notificationGroup
-            .createNotification(NotificationType.INFORMATION)
+        val notification = NotificationGroupManager.getInstance()
+            .getNotificationGroup(notificationGroupId)
+            .createNotification(notificationHeading, notificationContent, NotificationType.INFORMATION)
             .setIcon(DatalogIcons.MAIN)
-            .setTitle(notificationHeading)
-            .setContent(notificationContent)
-            .setListener(NotificationListener.URL_OPENING_LISTENER)
 
-        // TODO: review this
-        if (frame != null) {
-            val balloon =
-                NotificationsManagerImpl.createBalloon(
-                    frame,
-                    notification,
-                    true,
-                    false,
-                    BalloonLayoutData.fullContent()
-                ) { }
-
-            // frame.balloonLayout?.add(balloon, BalloonLayoutData.fullContent())
-            balloon.show(RelativePoint.getNorthEastOf(frame.component), Balloon.Position.atRight)
-        } else {
-            notification.notify(project)
+        links.forEach { (title, url) ->
+            notification.addAction(NotificationAction.createSimple(title) { BrowserUtil.browse(url) })
         }
 
+        notification.notify(project)
     }
 }
-

@@ -7,7 +7,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
-import com.intellij.psi.impl.source.tree.injected.changesHandler.range
 
 abstract class DatalogIncludeMixin(node: ASTNode) : ASTWrapperPsiElement(node), DatalogInclude {
     private fun getIncludeFileName(): String = string.text.trim('"')
