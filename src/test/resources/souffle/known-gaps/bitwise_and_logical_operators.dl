@@ -1,0 +1,6 @@
+.decl a(x: number)
+.decl b(x: number)
+b(x) :- a(x0), x = x0 bxor 3.
+b(x) :- a(x0), x = bnot x0.
+b(x) :- a(x0), x = lnot x0.
+b(x) :- a(x0), x = x0 land 1.

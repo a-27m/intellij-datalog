@@ -1,0 +1,4 @@
+.decl a(x: number)
+.decl b(x: number)
+.input a, b
+.output a, b

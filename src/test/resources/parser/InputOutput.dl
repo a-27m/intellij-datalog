@@ -1,0 +1,15 @@
+.decl a(x: number)
+.decl b(x: number)
+.decl c(x: number)
+
+.input a
+.input b(IO=file, filename="b.facts")
+.input c(IO=file, filename="c.csv", rfc4180=true, headers="true", compress="gzip")
+.output a
+.output b(IO=stdout)
+.output c(IO=file, filename="c.out", rfc4180=false)
+.printsize a
+.pragma "magic-transform" "*"
+.pragma "no-warn"
+.functor myFunctor(number, symbol): number
+.functor other(): symbol

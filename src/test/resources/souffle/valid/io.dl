@@ -1,0 +1,7 @@
+.decl a(x: number)
+.decl b(x: number)
+.input a
+.input b(IO=file, filename="b.facts")
+.output a
+.output b(IO=stdout)
+.printsize a

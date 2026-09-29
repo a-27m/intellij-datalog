@@ -1,0 +1,3 @@
+.decl a(x: number)
+a(x) :- a(x)
+.decl b(x: number)

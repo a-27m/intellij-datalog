@@ -1,0 +1,11 @@
+.decl edge(x: number, y: number)
+.decl reach(x: number, y: number)
+.decl dead(x: number)
+edge(1, 2).
+edge(2, 3).
+reach(x, y) :- edge(x, y).
+reach(x, z) :- reach(x, y), edge(y, z).
+dead(x) :- reach(_, x), !edge(x, _).
+dead(x) :- edge(x, _) ; edge(_, x).
+dead(x) :- edge(x, y), x != y, x < y, y >= 1.
+.output reach

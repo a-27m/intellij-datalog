@@ -1,0 +1,9 @@
+.decl edge(x: number, y: number)
+.decl stats(n: number)
+
+stats(n) :- n = count : { edge(_, _) }.
+stats(n) :- n = sum y : { edge(_, y) }.
+stats(n) :- n = max y : { edge(_, y) }.
+stats(n) :- n = min y : { edge(_, y) }.
+stats(n) :- n = mean y : { edge(_, y) }.
+stats(n) :- edge(x, _), n = count : { edge(x, _) }.

@@ -1,0 +1,7 @@
+.decl a(x: number) btree
+.decl b(x: number) brie
+.decl c(x: number, y: number) eqrel
+.decl d(x: number) inline
+.decl e(x: number) output
+.decl f(x: number) input
+.decl g(x: number) printsize

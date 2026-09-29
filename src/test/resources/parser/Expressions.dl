@@ -1,0 +1,21 @@
+.decl r(x: number, y: number, s: symbol)
+.decl q(x: number)
+.type Pair = [a: number, b: number]
+.decl rec(p: Pair)
+
+r(1 + 2 * 3, -4, "text").
+r(0x1F, 0b101, "").
+r(x + 1, y - 1, s) :- q(x), q(y), r(_, _, s).
+r(x * y, x / y, "a") :- q(x), q(y).
+r(x % 2, x ^ 2, "b") :- q(x).
+r(x band 1, x bor 2, "c") :- q(x).
+r((x + 1) * 2, x, "e") :- q(x).
+r(x, x, cat("a", "b")) :- q(x).
+r(x, strlen("abc"), to_string(x)) :- q(x).
+r(x, y, "f") :- q(x), y = x + 1.
+r(x, y, "g") :- q(x), match("a.*", "abc"), contains("b", "abc"), y = 1.
+r(@myFunctor(x, 1), x, "h") :- q(x).
+r(x, $, "i") :- q(x).
+rec([1, 2]).
+rec(nil).
+rec(p) :- rec(p), p = [_, _].

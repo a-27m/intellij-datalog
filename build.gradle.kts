@@ -1,6 +1,7 @@
 import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -27,7 +28,11 @@ dependencies {
     intellijPlatform {
         // Since 2025.3 IntelliJ IDEA is distributed as a single unified product.
         create(IntelliJPlatformType.IntellijIdea, ideaVersion)
+        testFramework(TestFrameworkType.Platform)
     }
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.opentest4j:opentest4j:1.3.0")
 }
 
 idea {
@@ -107,6 +112,16 @@ tasks.compileJava {
 tasks.processResources {
     filesMatching("datalog/version.properties") {
         expand("version" to project.version.toString())
+    }
+}
+
+tasks.test {
+    useJUnit()
+    // The Soufflé cross-check tests fail (instead of being skipped) when this is set and `souffle` is missing.
+    environment("REQUIRE_SOUFFLE", System.getenv("REQUIRE_SOUFFLE") ?: "")
+    testLogging {
+        events("failed", "skipped")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
     }
 }
 

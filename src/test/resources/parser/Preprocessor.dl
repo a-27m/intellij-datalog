@@ -1,0 +1,18 @@
+#include "other.dl"
+#define ANSWER 42
+#define PAIR(a, b) [a, b]
+#define LONG_MACRO(x) \
+    x + 1
+
+#ifndef GUARD
+#define GUARD
+.decl guarded(x: number)
+#endif
+
+#ifdef GUARD
+.decl also(x: number)
+#endif
+
+.decl m(x: number)
+m(ANSWER).
+m(LONG_MACRO(2)).
