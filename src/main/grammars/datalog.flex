@@ -36,10 +36,12 @@ LINE_BREAK = [\r|\n|\r\n]
 WHITE_SPACE=[ \t\f\r\n]+
 WHITE_SPACE_NON_BREAKING=[ \t\f]+
 
-STRING=\"[^\"]*\"
+STRING=\"([^\"\\]|\\[^])*\"
 NUMBER_BIN=0b[0-1]+
 NUMBER_HEX=0x[a-fA-F0-9]+
 NUMBER_DEC=0|([1-9][0-9]*)
+NUMBER_FLOAT=[0-9]+\.[0-9]+
+NUMBER_UNSIGNED=(0b[0-1]+|0x[a-fA-F0-9]+|0|[1-9][0-9]*)u
 
 COMMENT=("//".*) | ("/**/") | ("/*" [^*] ~ "*/")
 
@@ -58,7 +60,8 @@ MACRO_CONTINUATION = \\[ \t\f]*{LINE_BREAK}
   "#include"            { return INCLUDE_DIRECTIVE; }
   "#ifdef"              { return IFDEF_DIRECTIVE; }
   "#ifndef"             { return IFNDEF_DIRECTIVE; }
-  "#elif"               { return ELIF_DIRECTIVE; }
+  "#if"                 { yybegin(MACRO_DECL); return IF_DIRECTIVE; }
+  "#elif"               { yybegin(MACRO_DECL); return ELIF_DIRECTIVE; }
   "#else"               { return ELSE_DIRECTIVE; }
   "#endif"              { return ENDIF_DIRECTIVE; }
   "#define"             { yybegin(MACRO_DECL); return DEFINE_DIRECTIVE; }
@@ -82,6 +85,9 @@ MACRO_CONTINUATION = \\[ \t\f]*{LINE_BREAK}
   ".override"           { return OVERRIDE_DIRECTIVE; }
   ".pragma"             { return PRAGMA_DIRECTIVE; }
   ".functor"            { return FUNCTOR_DIRECTIVE; }
+  // Only directives when followed by whitespace, so that `instance.plan(x)` still lexes as a member access.
+  ".plan" / [ \t\r\n]      { return PLAN_DIRECTIVE; }
+  ".limitsize" / [ \t\r\n] { return LIMITSIZE_DIRECTIVE; }
 
   "output"              { return OUTPUT_QUALIFIER; }
   "input"               { return INPUT_QUALIFIER; }
@@ -91,6 +97,12 @@ MACRO_CONTINUATION = \\[ \t\f]*{LINE_BREAK}
   "brie"                { return BRIE_QUALIFIER; }
   "btree"               { return BTREE_QUALIFIER; }
   "eqrel"               { return EQREL_QUALIFIER; }
+  "btree_delete"        { return BTREE_DELETE_QUALIFIER; }
+  "no_inline"           { return NO_INLINE_QUALIFIER; }
+  "magic"               { return MAGIC_QUALIFIER; }
+  "no_magic"            { return NO_MAGIC_QUALIFIER; }
+  "choice-domain"       { return CHOICE_DOMAIN_KEYWORD; }
+  "stateful"            { return STATEFUL; }
 
   "_"                   { return UNDERSCORE; }
   "$"                   { return DOLLAR; }
@@ -108,6 +120,9 @@ MACRO_CONTINUATION = \\[ \t\f]*{LINE_BREAK}
   "band"                { return BAND; }
   "bxor"                { return BXOR; }
   "bor"                 { return BOR; }
+  "bshl"                { return BSHL; }
+  "bshr"                { return BSHR; }
+  "bshru"               { return BSHRU; }
 
   "as"                  { return AS; }
 
@@ -146,6 +161,8 @@ MACRO_CONTINUATION = \\[ \t\f]*{LINE_BREAK}
   ">="                  { return MORE_OR_EQUAL; }
 
   {STRING}              { return STRING; }
+  {NUMBER_UNSIGNED}     { return NUMBER_UNSIGNED; }
+  {NUMBER_FLOAT}        { return NUMBER_FLOAT; }
   {NUMBER_BIN}          { return NUMBER_BIN; }
   {NUMBER_HEX}          { return NUMBER_HEX; }
   {NUMBER_DEC}          { return NUMBER_DEC; }
@@ -160,6 +177,8 @@ MACRO_CONTINUATION = \\[ \t\f]*{LINE_BREAK}
   {LINE_BREAK}          { yybegin(YYINITIAL); return LINE_BREAK; }
 
   {STRING}              { return STRING; }
+  {NUMBER_UNSIGNED}     { return NUMBER_UNSIGNED; }
+  {NUMBER_FLOAT}        { return NUMBER_FLOAT; }
   {NUMBER_BIN}          { return NUMBER_BIN; }
   {NUMBER_HEX}          { return NUMBER_HEX; }
   {NUMBER_DEC}          { return NUMBER_DEC; }

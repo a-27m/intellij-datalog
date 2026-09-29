@@ -27,9 +27,15 @@ class DatalogKeywordCompletionContributor : CompletionContributor() {
                 ".input",
                 ".output",
                 ".init",
+                ".limitsize",
+                ".override",
+                ".plan",
                 "#include",
                 "#ifdef",
                 "#ifndef",
+                "#if",
+                "#elif",
+                "#else",
                 "#endif",
                 "#define"
             )

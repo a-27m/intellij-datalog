@@ -1,0 +1,2 @@
+.decl a(x:float)
+a(1.).

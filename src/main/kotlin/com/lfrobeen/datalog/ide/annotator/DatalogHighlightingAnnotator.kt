@@ -15,6 +15,7 @@ class DatalogHighlightingAnnotator : Annotator {
         is DatalogMacroDecl -> DatalogColors.MACRO
         is DatalogFunctorDecl -> DatalogColors.FUNCTOR
         is DatalogTypeDecl -> DatalogColors.TYPE_DERIVED
+        is DatalogAdtBranch -> DatalogColors.TYPE_DERIVED
         is DatalogRelDecl -> DatalogColors.RELATION
         is DatalogCompDecl -> DatalogColors.COMPONENT
         is DatalogCompInstDecl -> DatalogColors.INSTANCE

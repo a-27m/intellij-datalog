@@ -1,0 +1,8 @@
+.decl a(x: number)
+.decl b(x: number)
+b(-x) :- a(x).
+b(x bshl 1) :- a(x).
+b(x bshr 1) :- a(x).
+b(x bshru 1) :- a(x).
+b(x lor 1) :- a(x).
+b(-x + 1) :- a(x).

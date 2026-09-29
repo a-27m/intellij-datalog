@@ -1,0 +1,4 @@
+.decl a(x: symbol)
+a("q\"q").
+a("a\nb").
+a("a\\b").

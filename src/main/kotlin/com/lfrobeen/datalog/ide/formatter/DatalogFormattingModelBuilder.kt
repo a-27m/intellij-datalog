@@ -43,7 +43,8 @@ class DatalogFormattingModelBuilder : FormattingModelBuilder {
                 tokens(
                     INPUT_DIRECTIVE, OUTPUT_DIRECTIVE,
                     RELATION_DIRECTIVE, TYPE_DIRECTIVE, COMP_DIRECTIVE,
-                    TYPE_SYM_DIRECTIVE, TYPE_NUM_DIRECTIVE
+                    TYPE_SYM_DIRECTIVE, TYPE_NUM_DIRECTIVE,
+                    PRINTSIZE_DIRECTIVE, LIMITSIZE_DIRECTIVE, PLAN_DIRECTIVE, OVERRIDE_DIRECTIVE
                 )
             ).spaceIf(true)
             .around(tokens(LBRACE, RBRACE)).spaceIf(true)

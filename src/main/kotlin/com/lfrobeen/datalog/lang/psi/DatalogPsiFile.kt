@@ -22,7 +22,7 @@ class DatalogPsiFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider,
 
         val declarations = files.flatMap {
             val declarationSources = it.findChildrenByClass(DatalogProgramElement::class.java)
-                .mapNotNull { it.compDecl ?: it.statement?.decl ?: it.preprocessor?.macroDecl }
+                .flatMap { it.declarationsWithAdtBranches() }
 
             val comments = it.childrenOfType<DatalogDeclarationComment>()
             declarationSources+comments

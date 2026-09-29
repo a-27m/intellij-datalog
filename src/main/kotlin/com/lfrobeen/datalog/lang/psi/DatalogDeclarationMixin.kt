@@ -26,6 +26,7 @@ abstract class DatalogDeclarationMixin(node: ASTNode) : ASTWrapperPsiElement(nod
         is DatalogMacroDecl -> this.identifier
         is DatalogCompParameter -> this.identifier
         is DatalogFunctorDecl -> this.identifier
+        is DatalogAdtBranch -> this.identifier
         else -> error("Unknown declaration type")
     }
 
@@ -50,6 +51,7 @@ abstract class DatalogDeclarationMixin(node: ASTNode) : ASTWrapperPsiElement(nod
                 is DatalogMacroDecl -> DatalogIcons.MACRO
                 is DatalogCompParameter -> DatalogIcons.TYPE
                 is DatalogFunctorDecl -> DatalogIcons.FUNCTOR
+                is DatalogAdtBranch -> DatalogIcons.TYPE
                 else -> DatalogIcons.MAIN
             }
 
@@ -106,8 +108,7 @@ abstract class DatalogDeclarationMixin(node: ASTNode) : ASTWrapperPsiElement(nod
     private fun componentDeclarations() = CachedValuesManager.getCachedValue(this) {
         val declarations = when (this) {
             is DatalogCompDecl -> {
-                (this.programElementList
-                    .mapNotNull { it.compDecl ?: it.statement?.decl ?: it.preprocessor?.macroDecl } +
+                (this.programElementList.flatMap { it.declarationsWithAdtBranches() } +
                         this.compParameterList)
                     .mapNotNull {
                         when (it) {

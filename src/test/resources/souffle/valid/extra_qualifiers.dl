@@ -1,0 +1,5 @@
+.decl a(x: number) no_inline
+.decl b(x: number) magic
+.decl c(x: number) no_magic
+.decl d(x: number) btree_delete
+.decl e(x: number) output no_inline btree

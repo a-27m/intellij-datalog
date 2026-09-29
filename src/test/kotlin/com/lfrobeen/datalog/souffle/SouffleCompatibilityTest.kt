@@ -16,7 +16,8 @@ import java.util.concurrent.TimeUnit
  *  - `valid/`      Soufflé accepts the file; the plugin must parse it without errors.
  *  - `invalid/`    Soufflé rejects the file; the plugin must report a syntax error.
  *  - `known-gaps/` Soufflé accepts the file but the plugin still reports errors. These are unsupported Soufflé
- *                  features. When a gap gets fixed, the test fails until the file is moved to `valid/`.
+ *                  features (currently none). When a gap gets fixed, the test fails until the file is moved to
+ *                  `valid/`.
  *
  * Without a `souffle` binary on the PATH the tests are skipped, unless `REQUIRE_SOUFFLE` is set (as in CI).
  */
@@ -62,7 +63,8 @@ class SouffleCompatibilityTest : BasePlatformTestCase() {
     }
 
     fun testFixtureDirectoriesAreNotEmpty() {
-        for (dir in listOf("valid", "invalid", "known-gaps")) {
+        // known-gaps/ is empty whenever the plugin supports everything that is documented as missing.
+        for (dir in listOf("valid", "invalid")) {
             assertFalse("No fixtures in $dir", fixtures(dir).isEmpty())
         }
     }

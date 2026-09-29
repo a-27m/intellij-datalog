@@ -1,0 +1,5 @@
+.decl a(x:number)
+.decl b(x:number)
+.decl c(x:number)
+c(x) :- a(x), b(x).
+.plan 0:(2,1), 1:(1,2)
