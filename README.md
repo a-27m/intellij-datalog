@@ -98,6 +98,6 @@ The plugin is listed on the [JetBrains plugin repo](https://plugins.jetbrains.co
 ## Releases
 
 Every push and pull request is built by GitHub Actions (`.github/workflows/ci.yml`).
-Pushing a tag such as `v2.0.0` publishes a GitHub release with the plugin zip attached.
+Pushing a tag such as `v2.1.0` publishes a GitHub release with the plugin zip attached.
 To install it, download the zip from the [Releases](../../releases) page and use
 **Settings → Plugins → ⚙ → Install Plugin from Disk…**.
