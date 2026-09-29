@@ -1,0 +1,4 @@
+.pragma "no-warn" "x"
+.functor myFunctor(number, symbol): number
+.decl a(x: number)
+a(@myFunctor(1, "a")).

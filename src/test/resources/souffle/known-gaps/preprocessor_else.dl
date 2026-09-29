@@ -1,0 +1,5 @@
+#ifdef X
+.decl a(x: number)
+#else
+.decl b(x: number)
+#endif

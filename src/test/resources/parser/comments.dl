@@ -1,0 +1,13 @@
+// line comment
+.decl a(x: number) // trailing
+/* block comment */
+.decl b(x: number)
+/**
+ * Doc comment for c.
+ */
+.decl c(x: number)
+
+//> Declaration comment
+a(1).
+b(/* inline */ 2).
+c(3). // done

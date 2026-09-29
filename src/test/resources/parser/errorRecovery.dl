@@ -1,0 +1,7 @@
+.decl broken(x: number
+.decl afterBroken(x: number)
+afterBroken(1).
+reach(x, y) :- edge(x, y
+.decl stillParsed(x: number)
+.type
+.decl last(y: symbol)

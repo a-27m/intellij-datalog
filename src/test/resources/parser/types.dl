@@ -1,0 +1,15 @@
+.type Id = number
+.type Label <: symbol
+.type Node
+.symbol_type Name
+.number_type Year
+
+.type Pair = [a: number, b: number]
+.type Person = [name: Name, born: Year]
+.type List = [head: number, tail: List]
+.type Nothing = []
+.type Either = Id | Label
+.type Many = number | symbol | Node
+.type Alias = Pair
+
+.decl useTypes(p: Person, i: Id, l: Label, e: Either)

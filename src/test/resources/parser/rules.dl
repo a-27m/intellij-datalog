@@ -1,0 +1,20 @@
+.decl edge(x: number, y: number)
+.decl reach(x: number, y: number)
+.decl start(x: number)
+.decl deadEnd(x: number)
+.decl either(x: number)
+.decl chained(x: number, z: number)
+
+edge(1, 2).
+edge(2, 3).
+edge(3, 3).
+start(1).
+
+reach(x, y) :- edge(x, y).
+reach(x, z) :- reach(x, y), edge(y, z).
+deadEnd(x) :- reach(_, x), !edge(x, _).
+either(x) :- start(x) ; deadEnd(x).
+either(x) :- (start(x) ; deadEnd(x)), !(edge(x, x), reach(x, x)).
+chained(x, z) :- edge(x, y), edge(y, z), x != z, x < z, y >= 1, y <= 9, z > 0.
+chained(x, x) :- true.
+chained(x, x) :- false.

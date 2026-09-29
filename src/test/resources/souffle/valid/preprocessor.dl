@@ -1,0 +1,9 @@
+#define ANSWER 42
+#define PAIR(a, b) [a, b]
+#ifndef GUARD
+#define GUARD
+.decl guarded(x: number)
+#endif
+.decl m(x: number)
+m(ANSWER).
+guarded(1).

@@ -1,0 +1,15 @@
+.decl edge(from: number, to: number)
+.decl name(id: number, label: symbol)
+.decl weight(a: number, b: number, w: float)
+.decl counter(n: unsigned)
+.decl empty()
+
+.decl reach(x: number, y: number) output
+.decl seed(x: number) input
+.decl big(x: number) btree
+.decl sparse(x: number) brie
+.decl equiv(x: number, y: number) eqrel
+.decl helper(x: number) inline
+.decl tunable(x: number) overridable
+.decl counted(x: number) printsize
+.decl many(x: number) output printsize btree

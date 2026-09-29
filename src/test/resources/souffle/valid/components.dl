@@ -1,0 +1,15 @@
+.comp Base<T> {
+    .decl node(x: T)
+    .decl link(x: T, y: T)
+    node(x) :- link(x, _).
+}
+.comp Derived<T> : Base<T> {
+    .decl reach(x: T, y: T)
+    reach(x, y) :- link(x, y).
+    reach(x, z) :- reach(x, y), link(y, z).
+}
+.init g = Derived<number>
+g.link(1, 2).
+.decl out(x: number, y: number)
+out(x, y) :- g.reach(x, y).
+.output out

@@ -1,0 +1,8 @@
+.type Id = number
+.type Label <: symbol
+.type Name <: symbol
+.type Pair = [a: number, b: number]
+.type List = [head: number, tail: List]
+.type Either = Id | Name
+.decl use(i: Id, l: Label, p: Pair, e: Either)
+.decl prim(n: number, s: symbol, u: unsigned, f: float)

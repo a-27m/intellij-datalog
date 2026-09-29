@@ -1,0 +1,30 @@
+.comp Base<T> {
+    .decl node(x: T)
+    .decl link(x: T, y: T)
+    node(x) :- link(x, _).
+    node(y) :- link(_, y).
+}
+
+.comp Derived<T> : Base<T> {
+    .decl reach(x: T, y: T)
+    reach(x, y) :- link(x, y).
+    reach(x, z) :- reach(x, y), link(y, z).
+}
+
+.comp Plain {
+    .decl item(x: number)
+}
+
+.comp Nested<A, B> : Derived<A> {
+    .comp Inner {
+        .decl deep(x: number)
+    }
+}
+
+.init g = Derived<number>
+.init p = Plain
+
+g.link(1, 2).
+p.item(3).
+result(x, y) :- g.reach(x, y).
+.decl result(x: number, y: number)

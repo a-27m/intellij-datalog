@@ -26,22 +26,33 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
 
-      - name: Check for tests
-        id: tests
+      # The Soufflé cross-check tests compare the plugin's parser against the real Soufflé parser.
+      # Soufflé's official .deb targets Ubuntu 20.04 and depends on libffi7, which newer runners lack.
+      - name: Install Soufflé
         run: |
-          if [ -n "$(find src/test -name '*.kt' -o -name '*.java' 2>/dev/null | head -1)" ]; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "present=false" >> "$GITHUB_OUTPUT"
-            echo "No tests found, skipping test step."
-          fi
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq mcpp libsqlite3-dev libffi-dev libncurses-dev zlib1g-dev
+          curl -sSfL -o /tmp/libffi7.deb http://archive.ubuntu.com/ubuntu/pool/main/libf/libffi/libffi7_3.3-4_amd64.deb
+          curl -sSfL -o /tmp/souffle.deb https://souffle-lang.github.io/ppa/ubuntu/pool/stable/x86_64-ubuntu-2004-souffle-2.4-Linux.deb
+          sudo dpkg -i /tmp/libffi7.deb
+          sudo dpkg -i --force-depends /tmp/souffle.deb
+          souffle --version
 
       - name: Build plugin
         run: ./gradlew buildPlugin --no-daemon
 
       - name: Test
-        if: steps.tests.outputs.present == 'true'
+        env:
+          REQUIRE_SOUFFLE: "true"
         run: ./gradlew test --no-daemon
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-reports
+          path: build/reports/tests
+          if-no-files-found: ignore
 
       - name: Upload plugin zip
         uses: actions/upload-artifact@v7
