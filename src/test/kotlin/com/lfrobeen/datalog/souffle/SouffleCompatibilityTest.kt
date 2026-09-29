@@ -79,7 +79,7 @@ class SouffleCompatibilityTest : BasePlatformTestCase() {
         if (!soufflePresentOrSkip()) return
         for (file in fixtures("invalid")) {
             assertFalse("Soufflé should reject invalid/${file.name}", souffleAccepts(file))
-            assertNotEmpty(pluginSyntaxErrors(file))
+            assertFalse("Plugin should reject invalid/${file.name}", pluginSyntaxErrors(file).isEmpty())
         }
     }
 
@@ -87,9 +87,9 @@ class SouffleCompatibilityTest : BasePlatformTestCase() {
         if (!soufflePresentOrSkip()) return
         for (file in fixtures("known-gaps")) {
             assertTrue("Soufflé should accept known-gaps/${file.name}", souffleAccepts(file))
-            assertNotEmpty(
+            assertFalse(
                 "Plugin now parses known-gaps/${file.name} cleanly: move it to valid/",
-                pluginSyntaxErrors(file)
+                pluginSyntaxErrors(file).isEmpty()
             )
         }
     }
