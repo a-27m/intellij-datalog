@@ -4,32 +4,34 @@ import com.intellij.openapi.util.IconLoader
 
 object DatalogIcons {
 
-    @JvmField
-    val RELATION = IconLoader.getIcon("/icons/nodes/relation.svg")
+    private fun load(path: String) = IconLoader.getIcon(path, DatalogIcons::class.java.classLoader)
 
     @JvmField
-    val FUNCTOR = IconLoader.getIcon("/icons/nodes/functor.svg")
+    val RELATION = load("/icons/nodes/relation.svg")
 
     @JvmField
-    val TYPE = IconLoader.getIcon("/icons/nodes/type.svg")
+    val FUNCTOR = load("/icons/nodes/functor.svg")
 
     @JvmField
-    val COMP = IconLoader.getIcon("/icons/nodes/component.svg")
+    val TYPE = load("/icons/nodes/type.svg")
 
     @JvmField
-    val INST = IconLoader.getIcon("/icons/nodes/component_instance.svg")
+    val COMP = load("/icons/nodes/component.svg")
 
     @JvmField
-    val MACRO = IconLoader.getIcon("/icons/nodes/macro.svg")
+    val INST = load("/icons/nodes/component_instance.svg")
 
     @JvmField
-    val COMMENT = IconLoader.getIcon("/icons/nodes/comment.svg")
+    val MACRO = load("/icons/nodes/macro.svg")
 
     @JvmField
-    val FILE = IconLoader.getIcon("/icons/datalog-file.svg")
+    val COMMENT = load("/icons/nodes/comment.svg")
 
     @JvmField
-    val MAIN = IconLoader.getIcon("/icon.svg")
+    val FILE = load("/icons/datalog-file.svg")
+
+    @JvmField
+    val MAIN = load("/icon.svg")
 
 }
 
