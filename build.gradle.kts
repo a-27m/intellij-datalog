@@ -11,7 +11,7 @@ version = "2.1.0"
 plugins {
     idea
     kotlin("jvm") version "2.2.20"
-    id("org.jetbrains.intellij.platform") version "2.10.2"
+    id("org.jetbrains.intellij.platform") version "2.19.0"
     id("org.jetbrains.grammarkit") version "2022.3.2.2"
 }
 
@@ -27,6 +27,13 @@ dependencies {
         // Since 2025.3 IntelliJ IDEA is distributed as a single unified product.
         create(IntelliJPlatformType.IntellijIdea, ideaVersion)
     }
+}
+
+// Grammar-Kit runs on its own (older) IDE classpath; keep it independent of the target platform.
+grammarKit {
+    jflexRelease.set("1.9.2")
+    grammarKitRelease.set("2023.3")
+    intellijRelease.set("2023.3.8")
 }
 
 idea {
