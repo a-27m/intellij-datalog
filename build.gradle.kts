@@ -1,34 +1,32 @@
 import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-val ideaVersion = "2021.3.1" //prop("ideaVersion")
+val ideaVersion = "2026.2"
 
 group = "com.lfrobeen"
-version = "2.0.0"
+version = "2.1.0"
 
 plugins {
     idea
-    kotlin("jvm") version "1.6.20"
-    id("org.jetbrains.intellij") version "1.5.2"
-    id("org.jetbrains.grammarkit") version "2021.2.2"
-    id("de.undercouch.download") version "3.4.3"
-    id("net.saliman.properties") version "1.4.6"
-    id("com.palantir.git-version") version "0.11.0"
-}
-
-
-apply {
-    plugin("idea")
-    plugin("kotlin")
-    plugin("org.jetbrains.grammarkit")
-    plugin("org.jetbrains.intellij")
+    kotlin("jvm") version "2.2.20"
+    id("org.jetbrains.intellij.platform") version "2.10.2"
+    id("org.jetbrains.grammarkit") version "2022.3.2.2"
 }
 
 repositories {
     mavenCentral()
-    maven("https://dl.bintray.com/jetbrains/markdown")
-    maven("https://plugins.gradle.org/m2/")
+    intellijPlatform {
+        defaultRepositories()
+    }
+}
+
+dependencies {
+    intellijPlatform {
+        // Since 2025.3 IntelliJ IDEA is distributed as a single unified product.
+        create(IntelliJPlatformType.IntellijIdea, ideaVersion)
+    }
 }
 
 idea {
@@ -37,19 +35,20 @@ idea {
     }
 }
 
-intellij {
-    pluginName.set("intellij-datalog")
-    version.set(ideaVersion)
-    updateSinceUntilBuild.set(false)
-    instrumentCode.set(false)
-
-    // https://plugins.jetbrains.com/docs/intellij/annotator.html#required-project-configuration-changes
-    // plugins.set(listOf("com.intellij.java"))
+intellijPlatform {
+    pluginConfiguration {
+        name = "intellij-datalog"
+        ideaVersion {
+            sinceBuild = "262"
+            untilBuild = provider { null }
+        }
+    }
+    instrumentCode = false
 }
 
-configure<JavaPluginExtension> {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 sourceSets {
@@ -63,6 +62,10 @@ sourceSets {
 }
 
 kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
+        freeCompilerArgs.add("-Xjvm-default=all")
+    }
     sourceSets {
         main {
             kotlin.srcDirs("src/main/kotlin")
@@ -73,36 +76,27 @@ kotlin {
     }
 }
 
-val generateDatalogLexer = task<GenerateLexerTask>("generateDatalogLexer") {
-    source.set("src/main/grammars/datalog.flex")
-    targetDir.set("src/main/gen/com/lfrobeen/datalog/lang/lexer")
-    targetClass.set("DatalogLexer")
+val generateDatalogLexer = tasks.register<GenerateLexerTask>("generateDatalogLexer") {
+    sourceFile.set(file("src/main/grammars/datalog.flex"))
+    targetOutputDir.set(file("src/main/gen/com/lfrobeen/datalog/lang/lexer"))
     purgeOldFiles.set(true)
 }
 
-val generateDatalogParser = task<GenerateParserTask>("generateDatalogParser") {
-    source.set("src/main/grammars/datalog.bnf")
-    targetRoot.set("src/main/gen")
+val generateDatalogParser = tasks.register<GenerateParserTask>("generateDatalogParser") {
+    sourceFile.set(file("src/main/grammars/datalog.bnf"))
+    targetRootOutputDir.set(file("src/main/gen"))
     pathToParser.set("/datalog/lang/parser/DatalogParser.java")
     pathToPsiRoot.set("/datalog/lang/psi")
     purgeOldFiles.set(true)
 }
 
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "11"
-        languageVersion = "1.6"
-        apiVersion = "1.5"
-        freeCompilerArgs = listOf("-Xjvm-default=all")
-    }
-
-    dependsOn(
-        generateDatalogLexer,
-        generateDatalogParser
-    )
+tasks.compileKotlin {
+    dependsOn(generateDatalogLexer, generateDatalogParser)
 }
 
+tasks.compileJava {
+    dependsOn(generateDatalogLexer, generateDatalogParser)
+}
 
 tasks.withType<Copy> {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

@@ -36,16 +36,17 @@
         ]]>
     </change-notes>
 
-    <version>2.0.0</version>
+    <version>2.1.0</version>
 
-    <idea-version since-build="203.5981.155"/>
+    <idea-version since-build="262"/>
 
     <!-- https://plugins.jetbrains.com/docs/intellij/annotator.html#required-project-configuration-changes -->
     <!-- <depends>com.intellij.java</depends> -->
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileTypeFactory implementation="com.lfrobeen.datalog.lang.DatalogFileTypeFactory"/>
+        <fileType name="Datalog" language="Datalog" extensions="dl"
+                  implementationClass="com.lfrobeen.datalog.lang.DatalogFileType" fieldName="INSTANCE"/>
 
         <lang.syntaxHighlighterFactory language="Datalog"
                                        implementationClass="com.lfrobeen.datalog.ide.highlight.DatalogSyntaxHighlighterFactory"/>
@@ -115,7 +116,10 @@
 
         <postStartupActivity implementation="com.lfrobeen.datalog.ide.activity.DatalogPluginUpdateActivity"/>
 
+        <notificationGroup id="Datalog Plugin" displayType="STICKY_BALLOON"/>
+
         <applicationService serviceImplementation="com.lfrobeen.datalog.ide.settings.DatalogPluginSettings"/>
+        <applicationService serviceImplementation="com.lfrobeen.datalog.ide.component.DatalogComponent"/>
     </extensions>
 
     <actions>
@@ -128,10 +132,4 @@
             </action>
         </group>
     </actions>
-
-    <application-components>
-        <component>
-            <implementation-class>com.lfrobeen.datalog.ide.component.DatalogComponent</implementation-class>
-        </component>
-    </application-components>
 </idea-plugin>

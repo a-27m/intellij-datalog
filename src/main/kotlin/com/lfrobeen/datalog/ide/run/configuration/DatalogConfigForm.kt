@@ -19,8 +19,8 @@ class DatalogConfigForm : CommonProgramParametersPanel() {
         interpreterOptionsComponent = create(RawCommandLineEditor(), "Interpreter options")
         interpreterOptionsComponent!!.labelLocation = BorderLayout.WEST
 
-        val chooseInterpreterDesc = FileChooserDescriptorFactory.createSingleLocalFileDescriptor()
-        chooseInterpreterDesc.title = "Choose interpreter..."
+        val chooseInterpreterDesc = FileChooserDescriptorFactory.singleFile()
+            .withTitle("Choose interpreter...")
 
         interpreterPathComponent = create(
             MacroComboBoxWithBrowseButton(chooseInterpreterDesc, project),
@@ -28,8 +28,8 @@ class DatalogConfigForm : CommonProgramParametersPanel() {
         )
         interpreterPathComponent!!.labelLocation = BorderLayout.WEST
 
-        val chooseScriptDesc = FileChooserDescriptorFactory.createSingleLocalFileDescriptor()
-        chooseScriptDesc.title = "Choose datalog program..."
+        val chooseScriptDesc = FileChooserDescriptorFactory.singleFile()
+            .withTitle("Choose datalog program...")
 
         filePathComponent = create(MacroComboBoxWithBrowseButton(chooseScriptDesc, project), "Program:")
         filePathComponent!!.labelLocation = BorderLayout.WEST
