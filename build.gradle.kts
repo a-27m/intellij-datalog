@@ -11,7 +11,7 @@ version = "2.1.0"
 plugins {
     idea
     kotlin("jvm") version "2.4.0"
-    id("org.jetbrains.intellij.platform") version "2.10.2"
+    id("org.jetbrains.intellij.platform") version "2.19.0"
     id("org.jetbrains.grammarkit") version "2022.3.2.2"
 }
 
@@ -54,8 +54,8 @@ intellijPlatform {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 sourceSets {
@@ -70,7 +70,7 @@ sourceSets {
 
 kotlin {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_21)
+        jvmTarget.set(JvmTarget.JVM_25)
         freeCompilerArgs.add("-Xjvm-default=all")
     }
     sourceSets {
