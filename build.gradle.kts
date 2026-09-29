@@ -12,7 +12,7 @@ plugins {
     kotlin("jvm") version "1.6.20"
     id("org.jetbrains.intellij") version "1.5.2"
     id("org.jetbrains.grammarkit") version "2021.2.2"
-    id("de.undercouch.download") version "3.4.3"
+    id("de.undercouch.download") version "5.7.0"
     id("net.saliman.properties") version "1.4.6"
     id("com.palantir.git-version") version "0.11.0"
 }
