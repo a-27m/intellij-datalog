@@ -33,7 +33,7 @@ dependencies {
 grammarKit {
     jflexRelease.set("1.9.2")
     grammarKitRelease.set("2023.3")
-    intellijRelease.set("2023.3.8")
+    intellijRelease.set("233.15619.7")
 }
 
 idea {
