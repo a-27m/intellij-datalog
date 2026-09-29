@@ -97,6 +97,15 @@ val generateDatalogParser = tasks.register<GenerateParserTask>("generateDatalogP
     purgeOldFiles.set(true)
 }
 
+// Grammar-Kit's LightPsi bootstraps parts of the platform that expect an IDE home directory.
+generateDatalogParser.configure {
+    val ideaHome = layout.buildDirectory.dir("grammarkit-home").get().asFile
+    doFirst { ideaHome.mkdirs() }
+    systemProperty("idea.home.path", ideaHome.absolutePath)
+    systemProperty("idea.config.path", File(ideaHome, "config").absolutePath)
+    systemProperty("idea.system.path", File(ideaHome, "system").absolutePath)
+}
+
 tasks.compileKotlin {
     dependsOn(generateDatalogLexer, generateDatalogParser)
 }
