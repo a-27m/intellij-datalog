@@ -1,0 +1,4 @@
+.type A
+.type B
+.symbol_type S
+.decl a(x: A, y: B, z: S)

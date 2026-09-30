@@ -21,6 +21,7 @@
     INCLUDE_DIRECTIVE = "#include"
     IFDEF_DIRECTIVE = "#ifdef"
     IFNDEF_DIRECTIVE = "#ifndef"
+    IF_DIRECTIVE = "#if"
     ELIF_DIRECTIVE = "#elif"
     ELSE_DIRECTIVE = "#else"
     ENDIF_DIRECTIVE = "#endif"
@@ -28,7 +29,7 @@
 
     FLOAT_TYPE = "float"
     NUMBER_TYPE = "number"
-    UNSIGNED_TYPE_TYPE = "unsigned"
+    UNSIGNED_TYPE = "unsigned"
     SYMBOL_TYPE = "symbol"
 
     NIL = "nil"
@@ -45,6 +46,8 @@
     OVERRIDE_DIRECTIVE = ".override"
     PRAGMA_DIRECTIVE = ".pragma"
     FUNCTOR_DIRECTIVE = ".functor"
+    PLAN_DIRECTIVE = ".plan"
+    LIMITSIZE_DIRECTIVE = ".limitsize"
 
     OUTPUT_QUALIFIER = "output"
     INPUT_QUALIFIER = "input"
@@ -54,6 +57,12 @@
     BRIE_QUALIFIER = "brie"
     BTREE_QUALIFIER = "btree"
     EQREL_QUALIFIER = "eqrel"
+    BTREE_DELETE_QUALIFIER = "btree_delete"
+    NO_INLINE_QUALIFIER = "no_inline"
+    MAGIC_QUALIFIER = "magic"
+    NO_MAGIC_QUALIFIER = "no_magic"
+    CHOICE_DOMAIN_KEYWORD = "choice-domain"
+    STATEFUL = "stateful"
 
     UNDERSCORE = "_"
     DOLLAR='$'
@@ -63,6 +72,8 @@
     NUMBER_BIN = 'regexp:0b[0-1]+'
     NUMBER_HEX = 'regexp:0x[a-fA-F0-9]+'
     NUMBER_DEC = 'regexp:0|([1-9][0-9]*)'
+    NUMBER_FLOAT = 'regexp:[0-9]+\.[0-9]+'
+    NUMBER_UNSIGNED = 'regexp:(0b[0-1]+|0x[a-fA-F0-9]+|0|[1-9][0-9]*)u'
 
     COMMENT = 'regexp:(//.*)|(/*([^/]*)\*/)'
 
@@ -71,8 +82,8 @@
 
     COUNT="count"
     MEAN="mean"
-    MIN="max"
-    MAX="min"
+    MIN="min"
+    MAX="max"
     SUM="sum"
 
     IDENTIFIER = 'regexp:[_?a-zA-Z][_?a-zA-Z0-9]+|[?a-zA-Z]'
@@ -101,6 +112,9 @@
     BAND='band'
     BXOR='bxor'
     BOR='bor'
+    BSHL='bshl'
+    BSHR='bshr'
+    BSHRU='bshru'
     MUL='*'
     RDIV='/'
     PLUS='+'
@@ -140,7 +154,7 @@ private listCommaParens_recover ::= !(")" | ProgramElement_first)
 
 private Program ::= ProgramElement_withRecover*
 
-ProgramElement ::= Statement | Preprocessor | CompDecl | Pragma | AnyReferenceWithDot
+ProgramElement ::= Statement | Preprocessor | CompDecl | Pragma | Plan | AnyReferenceWithDot
 
 private ProgramElement_withRecover ::= !('}' | <<eof>>) ProgramElement {
     pin = 1
@@ -153,10 +167,11 @@ private ProgramElement_first ::= (
     ".decl" | ".type" |
     ".comp" | ".init" |
     ".functor" |
-    ".input" | ".output" | ".printsize" |
+    ".input" | ".output" | ".printsize" | ".limitsize" |
+    ".override" | ".plan" |
     ".pragma" |
     ".symbol_type" | ".number_type" |
-    DEFINE_DIRECTIVE | IFDEF_DIRECTIVE | IFNDEF_DIRECTIVE | ENDIF_DIRECTIVE | INCLUDE_DIRECTIVE |
+    DEFINE_DIRECTIVE | IFDEF_DIRECTIVE | IFNDEF_DIRECTIVE | IF_DIRECTIVE | ELIF_DIRECTIVE | ELSE_DIRECTIVE | ENDIF_DIRECTIVE | INCLUDE_DIRECTIVE |
     IDENTIFIER)
 
 
@@ -182,6 +197,9 @@ ComponentTyped ::= AnyRef ("<"TypeReference ("," TypeReference)*">")?
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 Preprocessor ::= (IFDEF_DIRECTIVE AnyRef)
                | (IFNDEF_DIRECTIVE AnyRef)
+               | (IF_DIRECTIVE MacroElement* (LINE_BREAK | <<eof>>))
+               | (ELIF_DIRECTIVE MacroElement* (LINE_BREAK | <<eof>>))
+               | ELSE_DIRECTIVE
                | ENDIF_DIRECTIVE
                | Include
                | (MacroDecl (LINE_BREAK | <<eof>>))
@@ -212,6 +230,8 @@ Decl ::= RelDecl
        | FunctorDecl
        | OutDecl
        | SizeDecl
+       | LimitSizeDecl
+       | OverrideDecl
        | CompInstDecl
 
 
@@ -220,8 +240,7 @@ RelDecl ::= ".decl" IDENTIFIER <<listCommaParens TypedIdentifier>> ")" Qualifier
     mixin = "com.lfrobeen.datalog.lang.psi.DatalogDeclarationMixin"
 }
 
-TypeDecl ::= ".type" IDENTIFIER ("=" | "<:") TypeDef
-           | ".type" IDENTIFIER
+TypeDecl ::= ".type" IDENTIFIER (("=" | "<:") TypeDef)?
            | ".symbol_type" IDENTIFIER
            | ".number_type" IDENTIFIER
 {
@@ -229,31 +248,30 @@ TypeDecl ::= ".type" IDENTIFIER ("=" | "<:") TypeDef
     mixin = "com.lfrobeen.datalog.lang.psi.DatalogDeclarationMixin"
 }
 
-FunctorDecl ::= ".functor" IDENTIFIER <<listCommaParens PrimitiveType>> ")" ":" PrimitiveType {
+private FunctorParam ::= TypedIdentifier | PrimitiveType | AnyReference
+
+FunctorDecl ::= ".functor" IDENTIFIER <<listCommaParens FunctorParam>> ")" ":" (PrimitiveType | AnyReference) STATEFUL? {
     pin=2
     mixin = "com.lfrobeen.datalog.lang.psi.DatalogDeclarationMixin"
 }
 
-InDeclIO ::= "IO" "=" ("stdin" | "file" | "sqlite")
-InDeclIOOpt ::= "filename" "=" STRING
-              | "compress" "=" STRING
-              | "columns" "=" STRING
-              | "headers" "=" STRING
-              | "rfc4180" "=" ("true" | "false")
-InDeclParam ::= InDeclIO | InDeclIOOpt
+// Parameters of I/O directives, e.g. IO=file, filename="a.facts", delimiter=",", n=10.
+// Soufflé accepts arbitrary keys here and validates them later, so the parser does the same.
+IoParam ::= IDENTIFIER "=" IoParamValue
+private IoParamValue ::= STRING | IDENTIFIER | TRUE | FALSE | Number
 
-OutDeclIO ::= "IO" "=" ("stdout" | "file" | "sqlite")
-OutDeclIOOpt ::= "filename" "=" STRING
-              | "compress" "=" STRING
-              | "columns" "=" STRING
-              | "rfc4180" "=" ("true" | "false")
-OutDeclParam ::= OutDeclIO | OutDeclIOOpt
+// Soufflé takes a comma separated list of relations followed by a single list of parameters that applies to all.
+private IoTargets ::= AnyReference ("," AnyReference)*
+private IoParams ::= <<listCommaParens IoParam>> ")"
 
-SizeDecl ::= ".printsize" AnyReference
-OutDecl ::= ".output" AnyReference (<<listCommaParens OutDeclParam>> ")")?
-InDecl ::= ".input" AnyReference (<<listCommaParens InDeclParam>> ")")?
+SizeDecl ::= ".printsize" IoTargets
+LimitSizeDecl ::= ".limitsize" IoTargets IoParams?
+OutDecl ::= ".output" IoTargets IoParams?
+InDecl ::= ".input" IoTargets IoParams?
 
-private TypeReference ::= AnyReference
+OverrideDecl ::= ".override" AnyReference {pin=1}
+
+private TypeReference ::= AnyReference | PrimitiveType
 //private CompReference ::= AnyReference
 
 AnyRef ::= IDENTIFIER
@@ -277,7 +295,8 @@ TypedIdentifier ::= Variable ":" Type
 // Datalog Primitives
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 Fact ::= Atom "."
-Clause ::= ClauseHead ":-" ClauseBody "." {
+private ClauseHeads ::= ClauseHead ("," ClauseHead)*
+Clause ::= ClauseHeads ":-" ClauseBody "." {
     pin=2
     recoverWhile=Clause_recover
 }
@@ -325,10 +344,14 @@ ArgumentList ::= <<listCommaParens Argument>> ")"
 // Arguments
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 Argument ::= AggregationExpr
+       | MinMaxExpr
        | FunctorExpr
        | MacroExpr
+       | CastExpr
+       | AdtExpr
        | SimpleExpr
        | TupleExpr
+       | UnaryOpExpr
        | BinOpExpr
        | AsExpr
        | AssocExpr
@@ -342,6 +365,11 @@ AssocExpr ::= "(" Argument ")"
 TupleExpr ::= <<listCommaBracket Argument>> "]" | "[" "]"
 
 FunctorExpr ::= "@" AnyRef <<listCommaParens Argument>> ")"
+// The intrinsic functors max(a, b) and min(a, b) share their names with the aggregation keywords.
+MinMaxExpr ::= ("max" | "min") <<listCommaParens Argument>> ")"
+CastExpr ::= "as" "(" Argument "," Type ")"
+AdtExpr ::= "$" AnyRef <<listCommaParens Argument>> ")"
+UnaryOpExpr ::= UnaryOp Argument
 MacroExpr ::= AnyRef <<listCommaParens (Argument | MacroParameter)>> ")"
 
 BinOpExpr ::= Argument BinOp Argument
@@ -372,21 +400,32 @@ PrimitiveType ::= FLOAT_TYPE | NUMBER_TYPE | UNSIGNED_TYPE | SYMBOL_TYPE
 
 TypeDef ::= EmptyTypeDef
           | RecordTypeDef
+          | AdtTypeDef
           | UnionTypeDef
           | Type
 
 EmptyTypeDef ::= "[""]"
 RecordTypeDef ::= <<listCommaBracket TypedIdentifier>> "]"
 UnionTypeDef ::= (Type "|" Type) ("|" Type)*
+AdtTypeDef ::= AdtBranch ("|" AdtBranch)*
+AdtBranch ::= IDENTIFIER "{" (TypedIdentifier ("," TypedIdentifier)*)? "}" {
+    mixin = "com.lfrobeen.datalog.lang.psi.DatalogDeclarationMixin"
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Misc & Helpers
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 Pragma ::= ".pragma" STRING STRING?
 
+// Execution plan for the rule preceding it, e.g. `.plan 0:(2,1), 1:(1,2)`
+Plan ::= ".plan" PlanItem ("," PlanItem)* {pin=1}
+PlanItem ::= NUMBER_DEC ":" "(" NUMBER_DEC ("," NUMBER_DEC)* ")"
+
 BinOp ::= "+" | "-" | "*" | "/" | "%" | "^"
-        | "bnot" | "band" | "bor" | "bxor"
-        | "lnot" | "land" | "lor"
+        | "band" | "bor" | "bxor" | "bshl" | "bshr" | "bshru"
+        | "land" | "lor"
+
+UnaryOp ::= "-" | "bnot" | "lnot"
 
 RelOp ::= "<" | ">" | "<=" | ">=" | "!=" | "=";
 
@@ -398,6 +437,14 @@ Qualifier ::= OUTPUT_QUALIFIER
             | BRIE_QUALIFIER
             | BTREE_QUALIFIER
             | EQREL_QUALIFIER
+            | BTREE_DELETE_QUALIFIER
+            | NO_INLINE_QUALIFIER
+            | MAGIC_QUALIFIER
+            | NO_MAGIC_QUALIFIER
+            | ChoiceDomainQualifier
 
-private Number ::= '-'? (NUMBER_HEX | NUMBER_BIN | NUMBER_DEC)
+ChoiceDomainQualifier ::= "choice-domain" ChoiceDomainKey ("," ChoiceDomainKey)*
+ChoiceDomainKey ::= IDENTIFIER | "(" IDENTIFIER ("," IDENTIFIER)* ")"
+
+private Number ::= '-'? (NUMBER_HEX | NUMBER_BIN | NUMBER_UNSIGNED | NUMBER_FLOAT | NUMBER_DEC)
 private Boolean ::= TRUE | FALSE

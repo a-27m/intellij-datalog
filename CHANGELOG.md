@@ -1,5 +1,21 @@
 # Changelog 
 
+## Unreleased
+
+### Soufflé Language Support
+* Parse float (`1.5`) and unsigned (`1u`, `0x1Fu`) literals, and escaped quotes in strings.
+* Add multi-head rules (`a(x), b(x) :- c(x).`), `.plan`, `.override` and `.limitsize`.
+* Add algebraic data types (`.type T = A {x: number} | B {}`) with `$A(1)` constructors that resolve to their branch.
+* Accept comma-separated relation lists in `.input`, `.output` and `.printsize` with a shared parameter list, and arbitrary
+  I/O parameters such as `delimiter` (previously only a fixed set was accepted).
+* Add the `choice-domain`, `no_inline`, `magic`, `no_magic` and `btree_delete` relation qualifiers, and `stateful` functors
+  with named or user-typed parameters.
+* Add `#if`, `#elif` and `#else`.
+* Add unary `-`, `bnot` and `lnot`, the `bshl`, `bshr` and `bshru` operators, `as(x, T)` casts and the `max(a, b)` / `min(a, b)` functors.
+* Accept primitive types as component arguments (`.init c = C<number>`) and `.type Name` without a definition.
+* Fix `max` and `min` token names being swapped.
+
+
 ## 2.0.0
 
 ### Syntax and Language Support

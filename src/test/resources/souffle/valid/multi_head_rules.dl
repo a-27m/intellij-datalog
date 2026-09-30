@@ -1,0 +1,6 @@
+.decl a(x: number)
+.decl b(x: number)
+.decl c(x: number)
+.decl d(x: number)
+a(x), b(x), c(x) :- d(x).
+d(1).

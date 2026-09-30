@@ -1,0 +1,7 @@
+.type S = A {x: number}
+ | B {y: symbol, z: number}
+ | C {}
+.type R = R1 {s: S} | R2 {}
+.decl a(r: R)
+a($R1($A(1))).
+a($R2()).

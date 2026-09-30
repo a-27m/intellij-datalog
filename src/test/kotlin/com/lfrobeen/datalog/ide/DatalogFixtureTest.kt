@@ -2,6 +2,7 @@ package com.lfrobeen.datalog.ide
 
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import com.lfrobeen.datalog.lang.psi.DatalogAdtBranch
 import com.lfrobeen.datalog.lang.psi.DatalogRelDecl
 import com.lfrobeen.datalog.lang.psi.impl.DatalogRelDeclImpl
 
@@ -157,5 +158,78 @@ class DatalogFixtureTest : BasePlatformTestCase() {
         val inserted = myFixture.editor.document.text.contains("edge")
         val offered = myFixture.lookupElementStrings.orEmpty().contains("edge")
         assertTrue("Expected relation 'edge' to be completed", inserted || offered)
+    }
+
+    fun testEveryHeadOfMultiHeadRuleResolvesToItsRelation() {
+        myFixture.configureByText(
+            "test.dl",
+            """
+            .decl a(x: number)
+            .decl b(x: number)
+            .decl c(x: number)
+            a(x), <caret>b(x) :- c(x).
+            """.trimIndent()
+        )
+
+        val target = myFixture.getReferenceAtCaretPositionWithAssertion().resolve()
+
+        assertEquals("b", (target as DatalogRelDeclImpl).name)
+    }
+
+    fun testMultiHeadRuleIsListedAsUsageOfAllHeadRelations() {
+        myFixture.configureByText(
+            "test.dl",
+            """
+            .decl a<caret>(x: number)
+            .decl b(x: number)
+            .decl c(x: number)
+            a(x), b(x) :- c(x).
+            """.trimIndent()
+        )
+
+        assertEquals(1, myFixture.findUsages(myFixture.elementAtCaret).size)
+    }
+
+    fun testSingletonVariableInMultiHeadRuleIsReportedAsWarning() {
+        myFixture.configureByText(
+            "test.dl",
+            """
+            .decl a(x: number)
+            .decl b(x: number)
+            .decl c(x: number)
+            a(x), b(y) :- c(x).
+            """.trimIndent()
+        )
+
+        assertContainsElements(
+            highlightMessages(HighlightSeverity.WARNING),
+            "Variable occurs only once in fact or rule."
+        )
+    }
+
+    fun testSouffleExtensionsProduceNoErrorHighlights() {
+        myFixture.configureByText("test.dl", java.io.File("src/test/resources/parser/SouffleExtensions.dl").readText())
+
+        val errors = myFixture.doHighlighting()
+            .filter { it.severity >= HighlightSeverity.ERROR }
+            .map { "${it.description} @ ${it.startOffset}" }
+
+        assertEmpty(errors)
+    }
+
+    fun testAdtConstructorResolvesToBranchDeclaration() {
+        myFixture.configureByText(
+            "test.dl",
+            """
+            .type Shape = Circle {r: number} | Dot {}
+            .decl shapes(s: Shape)
+            shapes(${'$'}Cir<caret>cle(1)).
+            """.trimIndent()
+        )
+
+        val target = myFixture.getReferenceAtCaretPositionWithAssertion().resolve()
+
+        assertTrue("Expected an ADT branch, got $target", target is DatalogAdtBranch)
+        assertEquals("Circle", (target as DatalogAdtBranch).identifier.text)
     }
 }

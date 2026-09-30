@@ -47,3 +47,13 @@ fun <T : PsiElement> PsiElement.childOfType(c: KClass<out T>): T? {
 
 inline fun <reified T : PsiElement> PsiElement.descendantOfTypeStrict(): T? =
     PsiTreeUtil.findChildOfType(this, T::class.java, /* strict */ true)
+
+/**
+ * The declaration made by this program element (if any), followed by the branches of an algebraic data type
+ * declaration, which are declarations in their own right (`.type T = A {x: number} | B {}` declares `A` and `B`).
+ */
+fun DatalogProgramElement.declarationsWithAdtBranches(): List<PsiElement> {
+    val declaration = compDecl ?: statement?.decl ?: preprocessor?.macroDecl ?: return emptyList()
+    val branches = (declaration as? DatalogTypeDecl)?.typeDef?.adtTypeDef?.adtBranchList.orEmpty()
+    return listOf(declaration) + branches
+}

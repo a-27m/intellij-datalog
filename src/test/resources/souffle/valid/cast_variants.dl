@@ -1,0 +1,4 @@
+.type T <: number
+.decl a(x: T)
+a(as(1, T)).
+a(as(1, number)).

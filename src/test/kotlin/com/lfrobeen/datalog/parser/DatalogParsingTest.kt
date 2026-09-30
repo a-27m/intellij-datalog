@@ -57,5 +57,7 @@ class DatalogParsingTest : ParsingTestCase("", "dl", DatalogParserDefinition()) 
 
     fun testFamilyExample() = assertParsesCleanly()
 
+    fun testSouffleExtensions() = assertParsesCleanly()
+
     fun testErrorRecovery() = assertParseErrors()
 }

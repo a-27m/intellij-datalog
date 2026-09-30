@@ -1,0 +1,4 @@
+.decl a(x: number, y: unsigned, z: float)
+a(0x1F, 0b1u, 0.0).
+a(-0x1F, 0x1Fu, -2.25).
+a(1 + 2, 1u + 2u, 1.5 + 2.5).

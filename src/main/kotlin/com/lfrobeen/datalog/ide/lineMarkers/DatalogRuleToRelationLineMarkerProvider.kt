@@ -16,13 +16,16 @@ class DatalogRuleToRelationLineMarkerProvider : RelatedItemLineMarkerProvider() 
         if (element !is DatalogClause)
             return
 
-        val relationRef = element.clauseHead.atom.anyReference.reference
-        val relation = relationRef?.resolve() as? DatalogRelDeclImpl ?: return
+        // A rule can have several heads, e.g. `a(x), b(x) :- c(x).`
+        val relations = element.clauseHeadList
+            .mapNotNull { it.atom.anyReference.reference?.resolve() as? DatalogRelDeclImpl }
+        if (relations.isEmpty())
+            return
 
         val builder = NavigationGutterIconBuilder
             .create(AllIcons.Gutter.ImplementingMethod)
-            .setTargets(listOf(relation))
-            .setTooltipText("Rule for relation ${relation.name}")
+            .setTargets(relations)
+            .setTooltipText("Rule for relation ${relations.joinToString { it.name.orEmpty() }}")
 
         result.add(builder.createLineMarkerInfo(element))
     }

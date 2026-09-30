@@ -1,0 +1,5 @@
+.functor f(a: number, b: symbol): number
+.functor g(): symbol
+.functor h(number, number): symbol stateful
+.type T = number
+.functor k(T): T

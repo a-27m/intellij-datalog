@@ -28,7 +28,7 @@ class DatalogSyntaxHighlighter : SyntaxHighlighterBase() {
             COMMENT -> DatalogColors.COMMENT
             STRING -> DatalogColors.STRING
 
-            NUMBER_BIN, NUMBER_HEX, NUMBER_DEC ->
+            NUMBER_BIN, NUMBER_HEX, NUMBER_DEC, NUMBER_FLOAT, NUMBER_UNSIGNED ->
                 DatalogColors.NUMBER
 
             TRUE, FALSE ->
@@ -37,7 +37,7 @@ class DatalogSyntaxHighlighter : SyntaxHighlighterBase() {
             // IDENTIFIER -> DatalogColors.IDENTIFIER
 
             DEFINE_DIRECTIVE, INCLUDE_DIRECTIVE,
-            IFDEF_DIRECTIVE, IFNDEF_DIRECTIVE, ENDIF_DIRECTIVE ->
+            IFDEF_DIRECTIVE, IFNDEF_DIRECTIVE, IF_DIRECTIVE, ELIF_DIRECTIVE, ELSE_DIRECTIVE, ENDIF_DIRECTIVE ->
                 DatalogColors.PREPROCESSOR
 
 
@@ -46,14 +46,15 @@ class DatalogSyntaxHighlighter : SyntaxHighlighterBase() {
 
             INPUT_DIRECTIVE, OUTPUT_DIRECTIVE, RELATION_DIRECTIVE,
             TYPE_DIRECTIVE, TYPE_NUM_DIRECTIVE, TYPE_SYM_DIRECTIVE,
-            COMP_DIRECTIVE, INIT_DIRECTIVE, FUNCTOR_DIRECTIVE ->
+            COMP_DIRECTIVE, INIT_DIRECTIVE, FUNCTOR_DIRECTIVE,
+            PRINTSIZE_DIRECTIVE, LIMITSIZE_DIRECTIVE, PLAN_DIRECTIVE, OVERRIDE_DIRECTIVE, STATEFUL ->
                 DatalogColors.KEYWORD
 
             PRAGMA_DIRECTIVE ->
                 DatalogColors.KEYWORD
 
             LNOT, LAND, LOR,
-            BNOT, BAND, BOR, BXOR ->
+            BNOT, BAND, BOR, BXOR, BSHL, BSHR, BSHRU ->
                 DatalogColors.KEYWORD
 
             AS ->

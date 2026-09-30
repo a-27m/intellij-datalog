@@ -1,0 +1,52 @@
+// Multi-head rule and execution plan
+.decl a(x: number)
+.decl b(x: number)
+.decl c(x: number)
+a(x), b(x) :- c(x), x > 0.
+.plan 0:(1), 1:(1)
+
+// Literals and operators
+.decl n(x: number, u: unsigned, f: float, s: symbol)
+n(-1, 0x1Fu, 1.5, "say \"hi\"").
+n(x bshl 1, 2u, -0.5, "b") :- c(x).
+n(-x, 1u, 1.0, "c") :- c(x).
+n(bnot x, 1u, 1.0, "d") :- c(x).
+n(max(1, 2), 1u, 1.0, "e") :- c(_).
+n(as(x, number), 1u, 1.0, "f") :- c(x).
+
+// Algebraic data types
+.type Shape = Circle {r: number} | Square {side: number} | Dot {}
+.decl shapes(s: Shape)
+shapes($Circle(1)).
+shapes($Dot()).
+
+// Type declarations, qualifiers and functors
+.type Node
+.decl edge(x: Node, y: Node) no_inline magic
+.decl pick(x: number, y: number) choice-domain (x, y), y
+.functor counter(): number stateful
+.functor scale(v: number, k: number): number
+
+// Directive lists with shared parameters
+.input a, b(IO=file, delimiter=",")
+.output a, b(IO=stdout)
+.printsize a, b
+.limitsize a, b(n=10)
+
+// Components
+.comp Base {
+    .decl r(x: number) overridable
+}
+.comp Derived<T> : Base {
+    .override r
+}
+.init d = Derived<number>
+
+// Conditional preprocessing
+#if defined(X)
+.decl viaIf(x: number)
+#elif defined(Y)
+.decl viaElif(x: number)
+#else
+.decl viaElse(x: number)
+#endif

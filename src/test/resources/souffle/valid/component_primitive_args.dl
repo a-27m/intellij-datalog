@@ -1,0 +1,4 @@
+.comp C<T, U> {
+    .decl a(x: T, y: U)
+}
+.init c = C<number, symbol>

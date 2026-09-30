@@ -75,7 +75,7 @@ class DatalogLexerTest : TestCase() {
         "TYPE_DIRECTIVE(.type)", "IDENTIFIER(A)", "LESS_COLON(<:)", "NUMBER_TYPE(number)",
     )
 
-    fun testAggregateKeywords() = assertTokens(
+    fun testAggregateKeywordsUseTheirOwnTokens() = assertTokens(
         "count sum mean min max",
         "COUNT(count)", "SUM(sum)", "MEAN(mean)", "MIN(min)", "MAX(max)",
     )
@@ -109,8 +109,46 @@ class DatalogLexerTest : TestCase() {
 
     fun testUnknownCharacterIsBadCharacter() = assertTokens("`", "BAD_CHARACTER(`)")
 
-    /** Documents the current behaviour: float literals are not supported yet and split into three tokens. */
-    fun testFloatLiteralIsNotSupportedYet() = assertTokens(
-        "1.5", "NUMBER_DEC(1)", "DOT(.)", "NUMBER_DEC(5)",
+    fun testFloatAndUnsignedLiterals() = assertTokens(
+        "1.5 0.25 1u 0x1Fu 0b1u",
+        "NUMBER_FLOAT(1.5)", "NUMBER_FLOAT(0.25)", "NUMBER_UNSIGNED(1u)",
+        "NUMBER_UNSIGNED(0x1Fu)", "NUMBER_UNSIGNED(0b1u)",
+    )
+
+    fun testTrailingDotAfterIntegerIsNotAFloat() = assertTokens(
+        "a(1).", "IDENTIFIER(a)", "LPARENTH(()", "NUMBER_DEC(1)", "RPARENTH())", "DOT(.)",
+    )
+
+    fun testStringWithEscapedQuote() = assertTokens(
+        "\"say \\\"hi\\\"\" x",
+        "STRING(\"say \\\"hi\\\"\")", "IDENTIFIER(x)",
+    )
+
+    fun testNewDirectives() = assertTokens(
+        ".plan 0:(1) .limitsize a .override r",
+        "PLAN_DIRECTIVE(.plan)", "NUMBER_DEC(0)", "COLON(:)", "LPARENTH(()", "NUMBER_DEC(1)", "RPARENTH())",
+        "LIMITSIZE_DIRECTIVE(.limitsize)", "IDENTIFIER(a)", "OVERRIDE_DIRECTIVE(.override)", "IDENTIFIER(r)",
+    )
+
+    fun testPlanIsOnlyADirectiveBeforeWhitespace() = assertTokens(
+        "g.plan(x)", "IDENTIFIER(g)", "DOT(.)", "IDENTIFIER(plan)", "LPARENTH(()", "IDENTIFIER(x)", "RPARENTH())",
+    )
+
+    fun testExtraQualifiersAndKeywords() = assertTokens(
+        "no_inline magic no_magic btree_delete choice-domain stateful",
+        "NO_INLINE_QUALIFIER(no_inline)", "MAGIC_QUALIFIER(magic)", "NO_MAGIC_QUALIFIER(no_magic)",
+        "BTREE_DELETE_QUALIFIER(btree_delete)", "CHOICE_DOMAIN_KEYWORD(choice-domain)", "STATEFUL(stateful)",
+    )
+
+    fun testShiftOperators() = assertTokens(
+        "bshl bshr bshru", "BSHL(bshl)", "BSHR(bshr)", "BSHRU(bshru)",
+    )
+
+    fun testConditionalPreprocessorLineIsLexedLikeMacroBody() = assertTokens(
+        "#if defined(X) && 1\n#elif Y\n#else\n#endif",
+        "IF_DIRECTIVE(#if)", "IDENTIFIER(defined)", "MACRO_TOKEN(()", "IDENTIFIER(X)", "MACRO_TOKEN())",
+        "MACRO_TOKEN(&)", "MACRO_TOKEN(&)", "NUMBER_DEC(1)", "LINE_BREAK(\n)",
+        "ELIF_DIRECTIVE(#elif)", "IDENTIFIER(Y)", "LINE_BREAK(\n)",
+        "ELSE_DIRECTIVE(#else)", "ENDIF_DIRECTIVE(#endif)",
     )
 }

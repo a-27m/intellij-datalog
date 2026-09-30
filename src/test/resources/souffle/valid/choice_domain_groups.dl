@@ -1,0 +1,1 @@
+.decl a(x: number, y: number, z: number) choice-domain (x, y), z
